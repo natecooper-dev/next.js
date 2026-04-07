@@ -13,7 +13,15 @@ describe('NEXT_HASH_SALT', () => {
     await next.clean()
     await next.build({ env: { NEXT_HASH_SALT: salt } })
     const files = await listClientChunks(join(next.testDir, next.distDir))
-    const chunks = files.filter((f) => f.endsWith('.js'))
+    // _buildManifest.js and _ssgManifest.js live under static/<buildId>/ which is
+    // non-deterministic when no deploymentId is set, so exclude them from the
+    // content-hash-determinism check.
+    const chunks = files.filter(
+      (f) =>
+        f.endsWith('.js') &&
+        !f.endsWith('_buildManifest.js') &&
+        !f.endsWith('_ssgManifest.js')
+    )
     const images = files.filter((f) => f.endsWith('.png'))
     const css = files.filter((f) => f.endsWith('.css'))
     return { chunks, images, css }
