@@ -22,6 +22,11 @@ on:
         description: 'The Graphite CI optimization secret'
         # secrets are not available in forks, check-skip will just fail-open with a warning
         required: false
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 env:
   # FYI, if you add this label, you must *push* to the repository again to trigger a new event. Just
   # re-running in the GitHub actions UI won't work, as it will re-use the old event with the old
