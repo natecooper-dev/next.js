@@ -24,6 +24,11 @@ on:
           - beta
           - canary
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 env:
   DEBUG: napi:*
 
@@ -47,7 +52,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+          with:
+            persist-credentials: false
 
       - name: Display release mode
         run: |
@@ -61,7 +68,7 @@ jobs:
             echo "  - 📦 This will PUBLISH packages to npm"
           fi
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
 
@@ -76,7 +83,7 @@ jobs:
         working-directory: ./rspack
 
       - name: Cache pnpm dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-${{ runner.arch }}-pnpm-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
