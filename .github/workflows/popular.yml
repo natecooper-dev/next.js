@@ -5,12 +5,19 @@ on:
     - cron: '0 10 * * 1' # Every Monday at 10AM UTC (6AM EST)
   workflow_dispatch:
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   run:
     if: github.repository_owner == 'vercel'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
       - name: Setup corepack
         run: |
