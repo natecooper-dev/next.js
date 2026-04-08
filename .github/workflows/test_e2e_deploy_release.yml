@@ -32,6 +32,11 @@ on:
         default: ''
         type: string
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 env:
   DD_ENV: 'ci'
   DATADOG_API_KEY: ${{ secrets.DATA_DOG_API_KEY }}
@@ -52,7 +57,7 @@ jobs:
       next-version: ${{ steps.version.outputs.value }}
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ env.NODE_LTS_VERSION }}
           check-latest: true
@@ -63,7 +68,9 @@ jobs:
           corepack enable
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+          with:
+            persist-credentials: false
         with:
           fetch-depth: 25
 
@@ -98,7 +105,7 @@ jobs:
           fi
 
       - name: Upload test timings
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: test-timings
           path: test-timings.json
@@ -234,7 +241,7 @@ jobs:
     steps:
       - name: Download test report artifacts
         id: download-test-reports
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           pattern: test-reports-*
           path: test
@@ -262,17 +269,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+          with:
+            persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20.9.0
           check-latest: true
 
       - name: Download adapter test result artifacts
         continue-on-error: true
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           pattern: adapter-test-reports-*
           path: adapter-test-results
