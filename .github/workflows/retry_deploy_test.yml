@@ -9,9 +9,13 @@ on:
 env:
   SLACK_WEBHOOK_URL: ${{ secrets.BROKEN_DEPLOY_SLACK_WEBHOOK_URL }}
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
 permissions:
   actions: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   retry-on-failure:
     name: retry failed jobs
