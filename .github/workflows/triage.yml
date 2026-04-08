@@ -9,9 +9,13 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
 permissions:
   issues: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   triage:
     name: Nissuer
