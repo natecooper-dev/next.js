@@ -13,6 +13,11 @@ on:
         description: 'The version to update to. Uses latest Canary if omitted.'
         required: false
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 env:
   NODE_LTS_VERSION: 20
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
@@ -22,7 +27,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+          with:
+            persist-credentials: false
         with:
           # Commits made with the default `GITHUB_TOKEN` won't trigger workflows.
           # See: https://docs.github.com/en/actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow
@@ -34,7 +41,7 @@ jobs:
           git config user.email "it+nextjs-bot@vercel.com"
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ env.NODE_LTS_VERSION }}
           check-latest: true
@@ -51,6 +58,8 @@ jobs:
 
       - name: Create Pull Request
         shell: bash
-        run: pnpm sync-react --actor "${{ github.actor }}" --commit --create-pull --version "${{ inputs.version }}"
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: pnpm sync-react --actor "${{ github.actor }}" --commit --create-pull --version "$INPUT_VERSION"
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_BOT_GITHUB_TOKEN }}
