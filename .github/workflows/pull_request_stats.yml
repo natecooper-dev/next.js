@@ -5,6 +5,8 @@ on:
     branches:
       - canary
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
 name: Generate Stats
 
 concurrency:
@@ -55,6 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          persist-credentials: false
           fetch-depth: 25
 
       - name: Check non-docs only change
@@ -82,7 +85,7 @@ jobs:
 
       - name: Upload stats results
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE == 'nope' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: pr-stats-${{ matrix.bundler }}
           path: pr-stats-${{ matrix.bundler }}.json
@@ -96,6 +99,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          persist-credentials: false
           fetch-depth: 25
 
       - name: Check non-docs only change
@@ -104,7 +108,7 @@ jobs:
 
       - name: Download all stats artifacts
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE == 'nope' }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           pattern: pr-stats-*
           path: stats-results
@@ -112,7 +116,7 @@ jobs:
 
       - name: Setup Node.js
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE == 'nope' }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ env.NODE_LTS_VERSION }}
 
