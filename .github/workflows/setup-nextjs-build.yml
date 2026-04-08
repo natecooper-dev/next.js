@@ -13,6 +13,11 @@ on:
         description: 'version of Node.js to use'
         type: string
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build_nextjs:
     name: Build Next.js for the turbopack integration test
@@ -25,7 +30,7 @@ jobs:
       output1: ${{ steps.build-next-swc-turbopack-patch.outputs.success }}
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ inputs.nodeVersion || env.NODE_LTS_VERSION }}
           check-latest: true
@@ -54,20 +59,24 @@ jobs:
         run: echo "Checking out Next.js ${{ env.NEXTJS_VERSION }}"
 
       - name: Checkout Next.js
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+          with:
+            persist-credentials: false
         with:
           repository: vercel/next.js
           ref: ${{ env.NEXTJS_VERSION }}
 
       - name: Checkout failed test lists
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+          with:
+            persist-credentials: false
         with:
           repository: vercel/turbo
           ref: nextjs-integration-test-data
           path: integration-test-data
 
       - name: Download binary
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           path: artifacts
 
