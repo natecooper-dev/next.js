@@ -6,6 +6,8 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
 concurrency:
   # Limit concurrent runs to 1 per PR,
   # but allow concurrent runs on push if they potentially use different source code
@@ -33,6 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          persist-credentials: false
           fetch-depth: 25
 
       - name: check for docs only change
@@ -101,7 +104,7 @@ jobs:
     if: ${{ needs.changes.outputs.docs-only == 'false' }}
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ env.NODE_LTS_VERSION }}
           check-latest: true
@@ -112,7 +115,9 @@ jobs:
           corepack enable
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+          with:
+            persist-credentials: false
         with:
           fetch-depth: 25
 
@@ -134,7 +139,7 @@ jobs:
           fi
 
       - name: Upload test timings
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: test-timings
           path: test-timings.json
@@ -160,6 +165,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -238,6 +245,8 @@ jobs:
     name: ast-grep lint
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: ast-grep lint step
         uses: ast-grep/action@cf62e780f0c88301228978d593a7784427a097a6 # v1.5.0
         with:
