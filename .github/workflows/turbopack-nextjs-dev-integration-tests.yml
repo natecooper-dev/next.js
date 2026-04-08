@@ -5,6 +5,11 @@ on:
     - cron: '0 6 * * *'
   workflow_dispatch: {}
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   test-dev:
     name: Next.js integration tests
