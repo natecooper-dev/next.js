@@ -37,6 +37,11 @@ on:
         type: number
         default: 2
 
+# Permissions are scoped to least privilege. See https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   # First, build Next.js to execute across tests.
   build-next:
@@ -153,7 +158,9 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+          with:
+            persist-credentials: false
 
       - name: Collect integration test stat
         uses: ./.github/actions/next-integration-stat
@@ -161,7 +168,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Store artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: test-results-${{ inputs.name }}
           path: |
